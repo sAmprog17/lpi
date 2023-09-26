@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import AuthContext from './context/AuthContext';
+import PrivateRoute from './routes/PrivateRoute';
+import LoginPage from './Components/LoginPage';
+import RegisterPage from './Components/RegisterPage';
+import TodoListPage from './Components/TodoListPage';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const authContextValue = {
+    user,
+    login: (userData) => {
+      // Implement login logic here (check credentials, set user, etc.)
+      setUser(userData);
+    },
+    logout: () => {
+      // Implement logout logic here (clear user data, etc.)
+      setUser(null);
+    },
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthContext.Provider value={authContextValue}>
+      <Router>
+        <Switch>
+          <Route exact path="/login" component={LoginPage} />
+          <Route exact path="/register" component={RegisterPage} />
+          <PrivateRoute exact path="/todo" component={TodoListPage} />
+          <Redirect to="/login" />
+        </Switch>
+      </Router>
+    </AuthContext.Provider>
   );
 }
 
